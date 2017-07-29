@@ -29,14 +29,14 @@ score = {}
 blocked = {}
 thres = 15
 def add_score(c, x):
-	if blocked.has_key(c):
+	if c in blocked:
 		return
-	if not score.has_key(c):
+	if c not in score:
 		score[c] = x
 	else:
 		score[c] += x
 	if score[c] >= thres:
-		print c
+		print(c)
 		blocked[c] = True
 
 def add(c, x):
@@ -51,7 +51,7 @@ def sniffer(pkt):
 
 	if tcp.flags & dpkt.tcp.TH_SYN != 0:
 		track[c] = []
-	if not track.has_key(c):
+	if c not in track:
 		return
 
 	if tcp.flags & dpkt.tcp.TH_FIN != 0 or tcp.flags & dpkt.tcp.TH_RST != 0:
@@ -62,13 +62,13 @@ def sniffer(pkt):
 		track[c].append((entropy(dist(str(tcp.payload))), s))
 		if len(track[c]) >= 4:
 			if track[c][0][0] > 4.8 or \
-			   (track[c][0][0] > 4.4 and track[c][1][0] > 4.2) or \
-			   (track[c][0][0] > 4.2 and track[c][2][0] > 4.2 and \
+				(track[c][0][0] > 4.4 and track[c][1][0] > 4.2) or \
+				(track[c][0][0] > 4.2 and track[c][2][0] > 4.2 and \
 				track[c][0][1] == track[c][2][1]) or \
-			   track[c][0][1] == track[c][1][1]:
-				add(c, 1)
+				track[c][0][1] == track[c][1][1]:
+					add(c, 1)
 			else:
-				add(c, -1)
+					add(c, -1)
 			del track[c]
 
 sniff(filter='tcp', store=False, prn=sniffer)
